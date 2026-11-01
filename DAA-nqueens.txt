@@ -1,0 +1,162 @@
+# Class to solve the 8-Queens problem using Backtracking
+class NQueens:
+
+    # Constructor to initialize the chessboard
+    def __init__(self):
+
+        # Set chessboard size to 8
+        self.size = 8
+
+        # Create an 8x8 chessboard initialized with False
+        self.board = [[False] * self.size for _ in range(self.size)]
+
+        # Counter to store the number of solutions found
+        self.count = 0
+
+    # Function to print the chessboard
+    def printBoard(self):
+
+        for row in self.board:
+            for ele in row:
+
+                # Print Q if a queen is present
+                if ele == True:
+                    print("Q", end=" ")
+
+                # Print X if the position is empty
+                else:
+                    print("X", end=" ")
+
+            print()
+        print()
+
+    # Function to check whether placing a queen is safe
+    def isSafe(self, row, col):
+
+        # Check the entire column
+        for i in range(self.size):
+            if self.board[i][col] == True:
+                return False
+
+        # Check upper-left diagonal
+        i = row
+        j = col
+
+        while i >= 0 and j >= 0:
+            if self.board[i][j] == True:
+                return False
+            i -= 1
+            j -= 1
+
+        # Check lower-right diagonal
+        i = row
+        j = col
+
+        while i < self.size and j < self.size:
+            if self.board[i][j] == True:
+                return False
+            i += 1
+            j += 1
+
+        # Check upper-right diagonal
+        i = row
+        j = col
+
+        while i >= 0 and j < self.size:
+            if self.board[i][j] == True:
+                return False
+            i -= 1
+            j += 1
+
+        # Check lower-left diagonal
+        i = row
+        j = col
+
+        while i < self.size and j >= 0:
+            if self.board[i][j] == True:
+                return False
+            i += 1
+            j -= 1
+
+        # If no queen attacks this position, it is safe
+        return True
+
+    # Function to place the first queen
+    def set_position_first_queen(self):
+
+        print("Enter coordinates of first queen:")
+
+        # Take row and column from the user (1 to 8)
+        row = int(input("Enter row (1-8): "))
+        col = int(input("Enter column (1-8): "))
+
+        # Check whether the coordinates are valid
+        if not (1 <= row <= self.size and 1 <= col <= self.size):
+            print("Invalid position!")
+            return False
+
+        # Place the first queen on the board
+        self.board[row - 1][col - 1] = True
+
+        # Display the initial chessboard
+        print("\nInitial Chessboard:")
+        self.printBoard()
+
+        return True
+
+    # Function to solve the problem using Backtracking
+    def solve(self, row):
+
+        # Base case: all 8 queens have been placed
+        if row == self.size:
+            self.count += 1
+
+            print("Solution", self.count)
+            self.printBoard()
+
+            return
+
+        # If a queen is already present in this row,
+        # move to the next row
+        if any(self.board[row]):
+            self.solve(row + 1)
+            return
+
+        # Try placing a queen in every column
+        for col in range(self.size):
+
+            # Check whether the current position is safe
+            if self.isSafe(row, col):
+
+                # Place the queen
+                self.board[row][col] = True
+
+                # Recursively solve the next row
+                self.solve(row + 1)
+
+                # Backtrack: remove the queen
+                self.board[row][col] = False
+
+    # Function to display the final result
+    def displayMessage(self):
+
+        if self.count > 0:
+            print("Solution exists for the given position of the queen.")
+
+        else:
+            print("Solution doesn't exist for the given position of the queen.")
+
+
+# MAIN PROGRAM
+
+# Create an object of the NQueens class
+solver = NQueens()
+
+# Place the first queen
+if solver.set_position_first_queen():
+
+    # Start solving from the first row
+    solver.solve(0)
+
+    # Display whether a solution exists
+    solver.displayMessage()
