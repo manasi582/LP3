@@ -1,0 +1,64 @@
+# Function to solve 0/1 Knapsack using Dynamic Programming
+def knapsack(values, weights, capacity):
+
+    # Get the total number of items
+    n = len(values)
+
+    # Create a DP table initialized with 0
+    # Rows represent items and columns represent capacities
+    dp = [[0 for i in range(capacity + 1)] for j in range(n + 1)]
+
+    # Traverse through each item
+    for i in range(1, n + 1):
+
+        # Check every possible capacity from 1 to maximum capacity
+        for w in range(1, capacity + 1):
+
+            # Check if the current item's weight fits
+            if weights[i - 1] <= w:
+
+                # Choose the maximum value between:
+                # 1. Including the current item
+                # 2. Excluding the current item
+                dp[i][w] = max(
+                    values[i - 1] + dp[i - 1][w - weights[i - 1]],
+                    dp[i - 1][w]
+                )
+
+            else:
+
+                # If item does not fit, exclude it
+                dp[i][w] = dp[i - 1][w]
+
+    # Return the maximum value from the last cell
+    return dp[n][capacity]
+
+
+# MAIN PROGRAM
+
+# Accept the number of items
+n = int(input("Enter number of items: "))
+
+# Accept values of all items
+values = list(map(int, input("Enter values of items: ").split()))
+
+# Accept weights of all items
+weights = list(map(int, input("Enter weights of items: ").split()))
+
+# Accept the maximum capacity of the knapsack
+capacity = int(input("Enter maximum weight: "))
+
+# Validate the input
+if n <= 0 or len(values) != n or len(weights) != n:
+    print("Invalid number of items or input.")
+
+elif any(w <= 0 for w in weights) or capacity < 0:
+    print("Weights must be positive and capacity cannot be negative.")
+
+else:
+
+    # Call the knapsack function
+    maximum_value = knapsack(values, weights, capacity)
+
+    # Display the maximum value
+    print("Maximum value of items that can be carried:", maximum_value)
