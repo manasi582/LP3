@@ -1,0 +1,150 @@
+# A Node represents one character or a combined group of characters
+class Node:
+
+    # Constructor to initialize a node
+    def __init__(self, left=None, right=None, value=None, frequency=None):
+
+        self.left = left          # Stores the left child
+        self.right = right        # Stores the right child
+        self.value = value        # Stores the character (if it is a leaf node)
+        self.frequency = frequency  # Stores the frequency of the character/group
+
+    # Returns the left and right children of a node
+    def children(self):
+        return (self.left, self.right)
+
+
+# Class to perform Huffman Encoding
+class Huffman_Encoding:
+
+    # Constructor: initializes the input string, queue and encoding dictionary
+    def __init__(self, string):
+
+        self.q = []             # Queue to store nodes
+        self.string = string    # Stores the input string
+        self.encoding = {}      # Dictionary to store character and binary code
+
+
+    # STEP 1: Count the frequency of each character
+    def char_frequency(self):
+
+        count = {}  # Dictionary to store character frequencies
+
+        # Go through every character in the input string
+        for char in self.string:
+
+            # If character is not already in dictionary, initialize it to 0
+            if char not in count:
+                count[char] = 0
+
+            # Increase the frequency of that character by 1
+            count[char] += 1
+
+        # Create a Node for every unique character
+        for char, value in count.items():
+
+            # value is the frequency of the character
+            node = Node(value=char, frequency=value)
+
+            # Add the node to the queue
+            self.q.append(node)
+
+        # Sort all nodes in ascending order of frequency
+        self.q.sort(key=lambda x: x.frequency)
+
+
+    # STEP 2: Build the Huffman Tree using the Greedy Method
+    def build_tree(self):
+
+        # Continue until only one node (root node) remains
+        while len(self.q) > 1:
+
+            # Remove the node with the smallest frequency
+            n1 = self.q.pop(0)
+
+            # Remove the node with the second-smallest frequency
+            n2 = self.q.pop(0)
+
+            # Create a new parent node by combining their frequencies
+            node = Node(
+                left=n1,
+                right=n2,
+                frequency=n1.frequency + n2.frequency
+            )
+
+            # Add the newly created node back into the queue
+            self.q.append(node)
+
+            # Sort the queue again in ascending order of frequency
+            self.q.sort(key=lambda x: x.frequency)
+
+
+    # STEP 3: Generate binary codes by traversing the Huffman Tree
+    def helper(self, node: Node, binary_str=""):
+
+        # Check if the current node is a leaf node containing a character
+        if type(node.value) is str:
+
+            # Store the character and its binary code in the dictionary
+            self.encoding[node.value] = binary_str
+
+            # Stop recursion for this leaf node
+            return
+
+        # Get the left and right children of the current node
+        l, r = node.children()
+
+        # Move left and add 0 to the binary code
+        self.helper(node.left, binary_str + "0")
+
+        # Move right and add 1 to the binary code
+        self.helper(node.right, binary_str + "1")
+
+        # Print the frequency of the current internal node
+        print(node.frequency)
+
+        return
+
+
+    # STEP 4: Start generating codes from the root node
+    def huffman_encoding(self):
+
+        # The last remaining node in the queue is the root of the tree
+        root = self.q[0]
+
+        # Start tree traversal with an empty binary string
+        self.helper(root, "")
+
+
+    # STEP 5: Display the generated Huffman codes
+    def print_encoding(self):
+
+        # Print table heading
+        print(' Char | Huffman code ')
+
+        # Print every character along with its binary code
+        for char, binary in self.encoding.items():
+
+            print(" %-4r |%12s" % (char, binary))
+
+
+    # Main function that calls all the steps in order
+    def encode(self):
+
+        self.char_frequency()   # Step 1: Calculate character frequencies
+
+        self.build_tree()       # Step 2: Build the Huffman Tree
+
+        self.huffman_encoding() # Step 3: Generate binary codes
+
+        self.print_encoding()   # Step 4: Display the codes
+
+
+# Take input from the user
+string = input("Enter string to be encoded: ")
+
+# Create an object of the Huffman_Encoding class
+encode = Huffman_Encoding(string)
+
+# Call the encode function to execute the complete program
+encode.encode()
