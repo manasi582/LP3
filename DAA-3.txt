@@ -1,0 +1,73 @@
+# Function to solve Fractional Knapsack using Greedy Method
+def fractional_knapsack(values, weights, capacity):
+
+    # Calculate value-to-weight ratio for each item
+    ratio = []
+
+    for i in range(len(values)):
+        ratio.append((values[i] / weights[i], values[i], weights[i]))
+
+    # Sort items in descending order of value-to-weight ratio
+    ratio.sort(reverse=True)
+
+    # Variable to store the maximum total value
+    total_value = 0
+
+    # Go through items in decreasing order of ratio
+    for r, value, weight in ratio:
+
+        # If the entire item can fit in the knapsack
+        if capacity >= weight:
+
+            # Take the complete item
+            total_value += value
+
+            # Reduce the remaining capacity
+            capacity -= weight
+
+        # If the entire item cannot fit
+        else:
+
+            # Take only the fraction that fits
+            fraction = capacity / weight
+
+            # Add the value of that fraction
+            total_value += value * fraction
+
+            # Knapsack is now full
+            capacity = 0
+
+            # Stop selecting items
+            break
+
+    # Return the maximum total value
+    return total_value
+
+
+# MAIN PROGRAM
+
+# Accept the number of items
+n = int(input("Enter number of items: "))
+
+# Accept values of all items
+values = list(map(int, input("Enter values of items: ").split()))
+
+# Accept weights of all items
+weights = list(map(int, input("Enter weights of items: ").split()))
+
+# Accept the maximum capacity of the knapsack
+capacity = int(input("Enter maximum weight: "))
+
+# Validate the input
+if n <= 0 or len(values) != n or len(weights) != n:
+    print("Invalid number of items or input.")
+
+elif any(w <= 0 for w in weights) or capacity < 0:
+    print("Weights must be positive and capacity cannot be negative.")
+
+else:
+    # Call the fractional knapsack function
+    maximum_value = fractional_knapsack(values, weights, capacity)
+
+    # Display the maximum value
+    print("Maximum value of items that can be carried:", maximum_value)
