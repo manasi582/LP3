@@ -1,0 +1,82 @@
+# Function to perform Job Sequencing using Greedy Method
+def job_sequencing(jobs):
+
+    # Sort jobs in descending order of profit
+    # Highest profit job will be considered first
+    jobs.sort(key=lambda x: x[2], reverse=True)
+
+    # Find the maximum deadline
+    # Limit the number of slots to the number of jobs
+    # This avoids creating unnecessary empty slots
+    max_deadline = min(len(jobs), max(job[1] for job in jobs))
+
+    # Create empty slots to schedule jobs
+    # None means the slot is empty
+    slots = [None] * max_deadline
+
+    # Initialize total profit to 0
+    total_profit = 0
+
+    # Go through each job in descending order of profit
+    for job in jobs:
+
+        # Extract Job ID, Deadline and Profit
+        job_id, deadline, profit = job
+
+        # Find the latest available slot before the deadline
+        # -1 is used because Python indexing starts from 0
+        # The loop moves backwards towards the first slot
+        for j in range(min(deadline, max_deadline) - 1, -1, -1):
+
+            # Check if the slot is empty
+            if slots[j] is None:
+
+                # Assign the job to the empty slot
+                slots[j] = job_id
+
+                # Add the job's profit to total profit
+                total_profit += profit
+
+                # Stop searching once the job is scheduled
+                break
+
+    # Display only the scheduled jobs (without None values)
+    scheduled_jobs = [job for job in slots if job is not None]
+
+    # Display the final scheduled jobs
+    print("\nScheduled Jobs:", scheduled_jobs)
+
+    # Display the maximum profit
+    print("Maximum Profit:", total_profit)
+
+
+# MAIN PROGRAM
+
+# Take number of jobs from the user
+n = int(input("Enter number of jobs: "))
+
+# Create an empty list to store job details
+jobs = []
+
+# Take details of each job
+for i in range(n):
+
+    # Input Job ID
+    job_id = input("Enter Job ID: ")
+
+    # Input Deadline
+    deadline = int(input("Enter Deadline: "))
+
+    # Input Profit
+    profit = int(input("Enter Profit: "))
+
+    # Store job details as a tuple
+    # Format: (Job ID, Deadline, Profit)
+    jobs.append((job_id, deadline, profit))
+
+
+# Call the job sequencing function
+if jobs:
+    job_sequencing(jobs)
+else:
+    print("No jobs entered.")
